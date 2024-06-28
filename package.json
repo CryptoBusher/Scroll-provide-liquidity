@@ -1,0 +1,24 @@
+{
+  "type": "module",
+  "name": "scroll-provide-liquidity",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scrollProvideLiquidity.js",
+  "scripts": {
+    "start": "forever start -o out.log -e err.log scrollProvideLiquidity.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CryptoBusher/Scroll-provide-liquidity.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ethers": "^6.10.0",
+    "forever": "^4.0.3",
+    "https-proxy-agent": "^7.0.2",
+    "node-fetch": "^3.3.2",
+    "winston": "^3.11.0",
+    "dotenv": "^16.4.1"
+  }
+}
