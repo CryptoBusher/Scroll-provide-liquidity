@@ -125,8 +125,10 @@ const startDepositing = async() => {
         if (!walletData) {
             logger.info('No any wallets remaining');
 
-            const tgMessage = `🚀 #completed\n\nNo any wallets remaining`;
-            await tgBot.sendNotification(tgMessage);
+            if (tgBot) {
+                const tgMessage = `🚀 #completed\n\nNo any wallets remaining`;
+                await tgBot.sendNotification(tgMessage);
+            }
             return;
         }
 
@@ -151,22 +153,29 @@ const startDepositing = async() => {
             const hash = await protocol.deposit(tokenName, amountWei);
             logger.info(`${name} - success, hash: ${await hash}`);
     
-            const tgMessage = `✅ #success\n\n<b>Wallet: </b>${name}\n<b>Deposited to: </b>${protocol.protocolName}\n<b>Amount: </b>${fromWei(tokenName, amountWei)} ${tokenName}\n\<b>Links: </b> <a href="https://scrollscan.com/address/${signer.address}">Wallet</a> | <a href="https://scrollscan.com/tx/${hash}">Tx</a> | <a href="https://debank.com/profile/${signer.address}/history?chain=scrl">DeBank</a>`;
-            await tgBot.sendNotification(tgMessage);
+            if (tgBot) {
+                const tgMessage = `✅ #success\n\n<b>Wallet: </b>${name}\n<b>Deposited to: </b>${protocol.protocolName}\n<b>Amount: </b>${fromWei(tokenName, amountWei)} ${tokenName}\n\<b>Links: </b> <a href="https://scrollscan.com/address/${signer.address}">Wallet</a> | <a href="https://scrollscan.com/tx/${hash}">Tx</a> | <a href="https://debank.com/profile/${signer.address}/history?chain=scrl">DeBank</a>`;
+                await tgBot.sendNotification(tgMessage);
+            };
     
         } catch(e) {
             if (e.message === 'nothing to deposit') {
                 logger.info(`${name} - ${e.message}`);
 
-                const tgMessage = `🎯 #finished\n\n<b>Wallet: </b>${name}\n<b>Info: </b> Nothing to deposit`;
-                await tgBot.sendNotification(tgMessage);
+                if (tgBot) {
+                    const tgMessage = `🎯 #finished\n\n<b>Wallet: </b>${name}\n<b>Info: </b> Nothing to deposit`;
+                    await tgBot.sendNotification(tgMessage);
+                }
 
                 removeWalletData(walletData);
                 continue;
             } else {
                 logger.error(`${name} - failed to process wallet, reason: ${e.message}`);
-                const tgMessage = `⛔️ #fail\n\n<b>Wallet: </b>${name}\n<b>Info: </b> ${e.message}`;
-                await tgBot.sendNotification(tgMessage);
+
+                if (tgBot) {
+                    const tgMessage = `⛔️ #fail\n\n<b>Wallet: </b>${name}\n<b>Info: </b> ${e.message}`;
+                    await tgBot.sendNotification(tgMessage);
+                }
             }
         }
 
