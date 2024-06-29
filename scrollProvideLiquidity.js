@@ -7,7 +7,6 @@ import { config } from './config.js';
 import { txtToArray, randomChoice, sleep, weightedRandomChoice, randFloat, roundToAppropriateDecimalPlace, randInt, removeLineFromTxt } from './src/utils/helpers.js'
 import { TelegramBot } from './src/modules/telegram.js';
 import { Aave } from './src/modules/aave.js';
-import { LayerBank } from './src/modules/layerBank.js';
 import { getBalance, fromWei, toWei } from './src/utils/web3Custom.js';
 
 
