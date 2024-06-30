@@ -62,7 +62,6 @@ const generateProviderAndSigner = (privateKey, proxy=undefined) => {
 const initLendingProtocol = (provider, signer) => {
     const protocols = {
         'Aave': Aave,
-        'LayerBank': LayerBank
     };
 
     const protocolToUse = weightedRandomChoice(config.protocolsPriority);
