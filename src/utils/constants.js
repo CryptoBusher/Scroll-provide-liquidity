@@ -50,7 +50,7 @@ export const tokensData = {
 				name: "Symbiosis"
 			}
 		},
-		ETH: {
+		ETH: {  // WETH
 			address: "0x5300000000000000000000000000000000000004",
 			decimals: 18,
 			isStable: false,
@@ -60,21 +60,22 @@ export const tokensData = {
 				"name": "Ethereum"		
 			}
 		},
-		LETH: {  // LayerBank staked ETH
-			address: "0x274C3795dadfEbf562932992bF241ae087e0a98C",
-			decimals: 18,
-		},
-		LUSDC: {  // LayerBank staked USDC
-			address: "0x0D8F8e271DD3f2fC58e5716d3Ff7041dBe3F0688",
-			decimals: 18,
-		},
-		AWETH: {  // AAVE staked ETH
+		aScrWETH: {  // AAVE staked ETH
 			address: "0xf301805be1df81102c957f6d4ce29d2b8c056b2a",
 			decimals: 18,
 			cgData: {
 				"id": "ethereum",
 				"symbol": "eth",
 				"name": "Ethereum"		
+			}
+		},
+		aScrUSDC: {  // AAVE staked USDC
+			address: "0x1D738a3436A8C49CefFbaB7fbF04B660fb528CbD",
+			decimals: 6,
+			cgData: {
+				id: "usd-coin",
+				symbol: "usdc",
+				name: "USDC"
 			}
 		}
 	}

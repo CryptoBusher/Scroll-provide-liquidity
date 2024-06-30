@@ -1,10 +1,6 @@
 import fs from "fs";
 
 
-export const shuffleArray = (array) => {
-	return array.sort(() => Math.random() - 0.5);
-};
-
 export const sleep = (sec) => {
 	return new Promise(resolve => setTimeout(resolve, sec * 1000));
 };
@@ -34,14 +30,6 @@ export const randFloat = (min, max) => {
 	return Math.random() * (max - min) + min;
 };
 
-
-export const randFloatWithDec = (min, max, minDec, maxDec) => {
-	const randomBase = Math.random() * (max - min) + min;
-	const decAmount = randInt(minDec, maxDec);
-	return parseFloat(randomBase.toFixed(decAmount));
-};
-
-
 export const randInt = (min, max) => {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -54,10 +42,6 @@ export const roundToAppropriateDecimalPlace = (value, minDec, maxDec) => {
 
 export const txtToArray = (filePath) => {
     return fs.readFileSync(filePath, 'utf8').toString().replace(/\r\n/g, '\n').split('\n').filter(n => n);
-};
-
-export const clearTxtFile = (path) => {
-    fs.writeFileSync(path, '');
 };
 
 export const removeLineFromTxt = (filePath, lineToRemoveText) => {

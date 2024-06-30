@@ -2,14 +2,18 @@
 // https://docs.aave.com/developers/deployed-contracts/v3-mainnet/scroll
 
 import fs from 'fs';
-import { ethers, MaxUint256 } from "ethers";
-import { toWei, fromWei, getBalance, approve, getApprovedAmount } from "./../utils/web3Custom.js";
+import { ethers, parseUnits } from "ethers";
+import { approve, getApprovedAmount } from "./../utils/web3Custom.js";
 import { tokensData } from "./../utils/constants.js";
-import { randFloat, randInt, roundToAppropriateDecimalPlace } from "./../utils/helpers.js";
+import { randFloat, randInt } from "./../utils/helpers.js";
 import { logger } from "./../logger/logger.js";
 
 
 export class Aave {
+	static RESERVES_MAP = {
+		ETH: 'aScrWETH',
+		USDC: 'aScrUSDC'
+	}
 	static ROUTER_ADDRESS = "0xFF75A4B698E3Ec95E608ac0f22A03B8368E05F5D";
 	static ROUTER_ABI = JSON.parse(fs.readFileSync('./src/abi/aaveRouter.json', "utf8"));
 	
@@ -18,9 +22,6 @@ export class Aave {
 	
 	static POOL_DATA_PROVIDER_ADDRESS = "0xa99F4E69acF23C6838DE90dD1B5c02EA928A53ee";
 	static POOL_DATA_PROVIDER_ABI = JSON.parse(fs.readFileSync('./src/abi/aavePoolDataProvider.json', "utf8"));
-	
-	static AAVE_SCROLL_WETH_ADDRESS = "0xf301805be1df81102c957f6d4ce29d2b8c056b2a";
-	static AAVE_SCROLL_USDC_ADDRESS = "0x1D738a3436A8C49CefFbaB7fbF04B660fb528CbD";
 
 	constructor(scrollProvider, scrollSigner, gasLimitMultipliers) {
 		this.protocolName = 'Aave';
@@ -49,7 +50,6 @@ export class Aave {
 	async depositEth(amountWei) {
 		logger.debug('Depositing ETH to AAVE');
 		const gasLimit = 300000; // idk why but it is static in metamask
-		await this.checkPoolAvailability('ETH');
 		
 		logger.debug(`Depositing`);
 		const tx = await this.routerContract.depositETH(
@@ -68,7 +68,6 @@ export class Aave {
 	async depositToken(tokenName, amountWei) {
 		logger.debug(`Depositing ${amountWei} of ${tokenName} to AAVE`);
 		const gasLimit = 300000; // idk why but it is static in metamask
-		await this.checkPoolAvailability(tokenName);
 
 		const approvedAmountWei = await getApprovedAmount(
 			tokensData.scroll[tokenName].address,
@@ -108,10 +107,56 @@ export class Aave {
 		return await receipt.hash;
 	}
 
-	async checkPoolAvailability(tokenName) {
-		// const isEthPoolPaused = await this.protocolDataProviderContract.getPaused(Aave.AAVE_SCROLL_WETH_ADDRESS);
-		// return isEthPoolPaused;
+	async validateSupply(tokenName, amountWei, safetyTresholdHuman) {
+		const reserveTokenAddress = tokensData.scroll[tokenName].address;
+		const aTokenAddress = tokensData.scroll[Aave.RESERVES_MAP[tokenName]].address;
+	
+		const aTokenAbi = JSON.parse(fs.readFileSync('./src/abi/aToken.json', "utf8"));
+		const aTokenContract = new ethers.Contract(aTokenAddress, aTokenAbi, this.scrollProvider);
+	
+		const isPaused = await this.poolDataProviderContract.getPaused(reserveTokenAddress);
+		if (isPaused) {
+			throw new Error(`${tokenName} pool is paused`);
+		}
+		
+		const reserveConfigurationData = await this.poolDataProviderContract.getReserveConfigurationData(reserveTokenAddress);
+		const decimals = reserveConfigurationData[0];
+		const isActive = reserveConfigurationData[8];
+		const isFrozen = reserveConfigurationData[9];
+	
+		if (!isActive) {
+			throw new Error(`${tokenName} pool is not active`);
+		}
+		if (isFrozen) {
+			throw new Error(`${tokenName} pool is frozen`);
+		}
+	
+		const [, supplyCapHuman ] = await this.poolDataProviderContract.getReserveCaps(reserveTokenAddress);
+		if (supplyCapHuman == 0) {
+			return;  // any amount can be supplied
+		}
+	
+		const reserveData = await this.poolDataProviderContract.getReserveData(reserveTokenAddress);
+		const accruedToTreasuryScaledWei = reserveData[1];
+		const liquidityIndexWei = reserveData[9];
+	
+		const scaledTotalSupplyWei = await aTokenContract.scaledTotalSupply();
+	
+		// got from contract supply validation method
+		const rayMul = (a, b) => {
+			const RAY = BigInt('1000000000000000000000000000');
+			return (a * b + RAY / BigInt('2')) / RAY;
+		};
+	
+		const totalSupply = rayMul(scaledTotalSupplyWei + accruedToTreasuryScaledWei, liquidityIndexWei) + amountWei;
+	
+		const supplyCapWei = parseUnits(supplyCapHuman.toString(), decimals);
+	
+		const safetyTresholdWei = parseUnits(safetyTresholdHuman.toString(), decimals);
+		logger.debug(`Current cap: ${supplyCapWei}, current supply: ${totalSupply}, overflow incl treshold: ${supplyCapWei - (totalSupply + safetyTresholdWei)}`);
 
-		// TODO: throw error if pool is paused
-	}
+		if (supplyCapWei < (totalSupply + safetyTresholdWei)) {
+			throw new Error(`Supply cap reached`);
+		}
+	};
 }

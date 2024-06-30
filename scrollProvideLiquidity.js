@@ -1,4 +1,4 @@
-import { ethers, JsonRpcProvider, formatEther, parseEther, FetchRequest } from "ethers";
+import { ethers, JsonRpcProvider, FetchRequest } from "ethers";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import fetch from "node-fetch";
 
@@ -148,6 +148,19 @@ const startDepositing = async() => {
             const [ tokenName, amountWei ] = await chooseTokenAndAmount(signer.address, provider);
     
             logger.info(`${name} - going to deposit ${fromWei(tokenName, amountWei)} of ${tokenName} to ${protocol.protocolName}`);
+            logger.info(`${name} - waiting for pool availability`);
+            while(true) {
+                try {
+                    await protocol.validateSupply(tokenName, amountWei, config.tokensConfig[tokenName].safetyTreshold);
+                    break;
+                } catch(e) {
+                    logger.debug(`Supply validation error: ${e.message}`);
+                    const delay = randInt(config.supplyValidationDelaySec[0], config.supplyValidationDelaySec[1]);
+                    await sleep(delay);
+                }
+            }
+
+            logger.info(`${name} - trying to perform deposit`);
             const hash = await protocol.deposit(tokenName, amountWei);
             logger.info(`${name} - success, hash: ${await hash}`);
     
