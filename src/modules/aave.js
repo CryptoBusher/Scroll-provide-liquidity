@@ -120,9 +120,9 @@ export class Aave {
 		}
 		
 		const reserveConfigurationData = await this.poolDataProviderContract.getReserveConfigurationData(reserveTokenAddress);
-		const decimals = reserveConfigurationData[0];
-		const isActive = reserveConfigurationData[8];
-		const isFrozen = reserveConfigurationData[9];
+		const decimals = await reserveConfigurationData[0];
+		const isActive = await reserveConfigurationData[8];
+		const isFrozen = await reserveConfigurationData[9];
 	
 		if (!isActive) {
 			throw new Error(`${tokenName} pool is not active`);
@@ -137,8 +137,8 @@ export class Aave {
 		}
 	
 		const reserveData = await this.poolDataProviderContract.getReserveData(reserveTokenAddress);
-		const accruedToTreasuryScaledWei = reserveData[1];
-		const liquidityIndexWei = reserveData[9];
+		const accruedToTreasuryScaledWei = await reserveData[1];
+		const liquidityIndexWei = await reserveData[9];
 	
 		const scaledTotalSupplyWei = await aTokenContract.scaledTotalSupply();
 	
