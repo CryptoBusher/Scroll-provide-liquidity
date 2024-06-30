@@ -5,7 +5,7 @@ import fs from 'fs';
 import { ethers, parseUnits } from "ethers";
 import { approve, getApprovedAmount } from "./../utils/web3Custom.js";
 import { tokensData } from "./../utils/constants.js";
-import { randFloat, randInt } from "./../utils/helpers.js";
+import { randFloat, randInt, sleep } from "./../utils/helpers.js";
 import { logger } from "./../logger/logger.js";
 
 
