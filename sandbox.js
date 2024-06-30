@@ -20,6 +20,8 @@ const POOL_DATA_PROVIDER_ABI = JSON.parse(fs.readFileSync('./src/abi/aavePoolDat
 
 const AAVE_SCROLL_WETH_ADDRESS = "0xf301805be1df81102c957f6d4ce29d2b8c056b2a";
 const AAVE_SCROLL_USDC_ADDRESS = "0x1D738a3436A8C49CefFbaB7fbF04B660fb528CbD";
+const WETH_ADDRESS = "0x5300000000000000000000000000000000000004";
+const USDC_ADDRESS = "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4";
 
 
 const routerContract = new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, provider);
@@ -27,12 +29,16 @@ const poolV3Contract = new ethers.Contract(POOL_V3_ADDRESS, POOL_V3_ABI, provide
 const poolDataProviderContract = new ethers.Contract(POOL_DATA_PROVIDER_ADDRESS, POOL_DATA_PROVIDER_ABI, provider);
 
 
-const getPaused = async () => {
-    const isPaused = await poolDataProviderContract.getPaused(AAVE_SCROLL_WETH_ADDRESS);
-    console.log(isPaused);
+const isDepositAvailable = async () => {
+    const [ borrowCapHuman, supplyCapHuman ] = await poolDataProviderContract.getReserveCaps(WETH_ADDRESS);
+    console.log(supplyCapHuman);
+
+    const reserveData = await poolDataProviderContract.getReserveData(WETH_ADDRESS);
+    const totalAtokenWei = await reserveData[2];
+    console.log(totalAtokenWei)
 };
 
-// getPaused();
+isDepositAvailable();
 
 
 // [[0x5300000000000000000000000000000000000004]
@@ -40,8 +46,7 @@ const getPaused = async () => {
 // [0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32]]
 
 
-const a = 18000
-const b = 17999067577728267548445 / (10**18)
-console.log(a-b)
-console.log(a)
-console.log(b)
+// [[aScrWETH,0xf301805bE1Df81102C957f6d4Ce29d2B8c056B2a]
+// [aScrUSDC,0x1D738a3436A8C49CefFbaB7fbF04B660fb528CbD]
+// [aScrwstETH,0x5B1322eeb46240b02e20062b8F0F9908d525B09c]]
+

@@ -133,3 +133,4 @@ dist
 wallets.txt
 package-lock.json
 .DS_Store
+config.js

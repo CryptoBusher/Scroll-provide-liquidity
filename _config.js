@@ -17,15 +17,15 @@ export const config = {
 		chatId: process.env.TG_CHAT_ID
 	},
 
-    accDelaySec: [1800, 5400],
-    gasLimitMultipliers: [1.1, 1.4],
+    accDelaySec: [300, 900],
+    gasLimitMultipliers: [1.3, 1.6],
 
     tokensConfig: {
         ETH: {
             depositEnabled: true,
-            minDeposit: 0.0005,
-            remainingBalance: [0.007, 1],
-            roundToDecimals: [3, 5],
+            minDeposit: 0.013,
+            remainingBalance: [0.001, 0.002],
+            roundToDecimals: [2, 4],
         },
         USDC: {
             depositEnabled: false,
