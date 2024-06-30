@@ -36,7 +36,6 @@ export const config = {
     },
 
     protocolsPriority: {
-        Aave: 1,
-        LayerBank: 0
+        Aave: 1
     }
 };
