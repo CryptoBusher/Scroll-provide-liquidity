@@ -96,7 +96,7 @@ const chooseTokenAndAmount = async (walletAddress, provider) => {
     }
 
     const availableTokens = allTokens.filter(token => token.canDeposit);
-    logger.debug(`availableTokens: ${Object.keys(availableTokens)}`);
+    logger.debug(`availableTokens: ${availableTokens.length}`);
 
     if (availableTokens.length == 0) {
         throw new Error('nothing to deposit');
