@@ -18,7 +18,7 @@ export const config = {
 	},
 
     accDelaySec: [300, 900],                                    // Задержка между аккаунтами в секундах (min, max)
-    gasLimitMultipliers: [1.3, 1.6],                            // Увеличиваем gasLimit (min, max). AAVE депозит работает с дефолтным gasLimit (захардкодил)
+    gasMultipliers: [1.3, 1.6],                                 // Увеличиваем gasLimit + gasPrice (min, max). AAVE депозит работает с дефолтным gasLimit (захардкодил)
 
     tokensConfig: {
         ETH: {

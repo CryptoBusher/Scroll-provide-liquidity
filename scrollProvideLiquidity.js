@@ -65,7 +65,7 @@ const initLendingProtocol = (provider, signer) => {
     };
 
     const protocolToUse = weightedRandomChoice(config.protocolsPriority);
-    return new protocols[protocolToUse](provider, signer, config.gasLimitMultipliers);
+    return new protocols[protocolToUse](provider, signer, config.gasMultipliers);
 };
 
 const chooseTokenAndAmount = async (walletAddress, provider) => {

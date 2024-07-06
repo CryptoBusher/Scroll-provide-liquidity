@@ -23,20 +23,20 @@ export class Aave {
 	static POOL_DATA_PROVIDER_ADDRESS = "0xa99F4E69acF23C6838DE90dD1B5c02EA928A53ee";
 	static POOL_DATA_PROVIDER_ABI = JSON.parse(fs.readFileSync('./src/abi/aavePoolDataProvider.json', "utf8"));
 
-	constructor(scrollProvider, scrollSigner, gasLimitMultipliers) {
+	constructor(scrollProvider, scrollSigner, gasMultipliers) {
 		this.protocolName = 'Aave';
 
 		this.scrollProvider = scrollProvider;
 		this.scrollSigner = scrollSigner;
-		this.gasLimitMultipliers = gasLimitMultipliers;
+		this.gasMultipliers = gasMultipliers;
 
 		this.routerContract = new ethers.Contract(Aave.ROUTER_ADDRESS, Aave.ROUTER_ABI, this.scrollSigner);
 		this.poolV3Contract = new ethers.Contract(Aave.POOL_V3_ADDRESS, Aave.POOL_V3_ABI, this.scrollSigner);
 		this.poolDataProviderContract = new ethers.Contract(Aave.POOL_DATA_PROVIDER_ADDRESS, Aave.POOL_DATA_PROVIDER_ABI, this.scrollProvider);
 	}
 
-	getGasLimitMultiplier() {
-		return randFloat(this.gasLimitMultipliers[0], this.gasLimitMultipliers[1]);
+	getGasMultiplier() {
+		return randFloat(this.gasMultipliers[0], this.gasMultipliers[1]);
 	}
 
 	async deposit(tokenName, amountWei) {
@@ -52,11 +52,15 @@ export class Aave {
 		const gasLimit = 300000; // idk why but it is static in metamask
 		
 		logger.debug(`Depositing`);
+		const feeData = await this.scrollProvider.getFeeData();
+		const estimatedGasPrice = feeData.gasPrice;
+		const gasPrice = estimatedGasPrice * BigInt(parseInt(this.getGasMultiplier() * 100)) / BigInt(100);
+
 		const tx = await this.routerContract.depositETH(
 			Aave.POOL_V3_ADDRESS,
 			this.scrollSigner.address,
 			0,
-			{ value: amountWei, gasLimit }
+			{ value: amountWei, gasLimit, gasPrice }
 		);
 
 		const receipt = await tx.wait();
@@ -84,7 +88,7 @@ export class Aave {
 				amountWei,
 				Aave.POOL_V3_ADDRESS,
 				this.scrollSigner,
-				this.getGasLimitMultiplier()
+				this.getGasMultiplier()
 			);
 			logger.debug(`approveHash: ${approveHash}`);
 			const delaySec = randInt(3, 10);
@@ -93,12 +97,16 @@ export class Aave {
 		}
 
 		logger.debug(`Depositing`);
+		const feeData = await this.scrollProvider.getFeeData();
+		const estimatedGasPrice = feeData.gasPrice;
+		const gasPrice = estimatedGasPrice * BigInt(parseInt(this.getGasMultiplier() * 100)) / BigInt(100);
+
 		const tx = await this.poolV3Contract.supply(
 			tokensData.scroll[tokenName].address,
 			amountWei,
 			this.scrollSigner.address,
 			0,
-			{ gasLimit }
+			{ gasLimit, gasPrice }
 		);
 
 		const receipt = await tx.wait();

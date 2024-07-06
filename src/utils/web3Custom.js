@@ -14,14 +14,18 @@ export const getBalance = async (walletAddress, provider, tokenName) => {
 	}
 };
 
-export const approve = async (tokenAddress, amountWei, spenderAddress, signer, gasLimitMultiplier) => {
+export const approve = async (tokenAddress, amountWei, spenderAddress, signer, gasMultiplier) => {
 	const erc20Abi = JSON.parse(fs.readFileSync('./src/abi/erc20.json', "utf8"));
 	const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, signer);
 
 	const estimatedGasLimit = await tokenContract.approve.estimateGas(spenderAddress, amountWei);
-	const gasLimit = estimatedGasLimit * BigInt(parseInt(gasLimitMultiplier * 100)) / BigInt(100);
+	const gasLimit = estimatedGasLimit * BigInt(parseInt(gasMultiplier * 100)) / BigInt(100);
 
-	const tx = await tokenContract.approve(spenderAddress, amountWei, { gasLimit }); 
+	const feeData = await signer.provider.getFeeData();
+	const estimatedGasPrice = feeData.gasPrice;
+	const gasPrice = estimatedGasPrice * BigInt(parseInt(gasMultiplier * 100)) / BigInt(100);
+
+	const tx = await tokenContract.approve(spenderAddress, amountWei, { gasLimit, gasPrice }); 
 	const receipt = await tx.wait();
 	return await receipt.hash;
 };
