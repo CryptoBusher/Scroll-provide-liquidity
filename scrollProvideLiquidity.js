@@ -81,6 +81,12 @@ const chooseTokenAndAmount = async (walletAddress, provider) => {
             balanceWei: 0,
             balanceHuman: 0,
             canDeposit: false,
+        },
+        {
+            name: 'wstETH',
+            balanceWei: 0,
+            balanceHuman: 0,
+            canDeposit: false,
         }
     ];
 

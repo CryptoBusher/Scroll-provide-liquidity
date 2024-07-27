@@ -12,7 +12,8 @@ import { logger } from "./../logger/logger.js";
 export class Aave {
 	static RESERVES_MAP = {
 		ETH: 'aScrWETH',
-		USDC: 'aScrUSDC'
+		USDC: 'aScrUSDC',
+		wstETH: 'aScrwstETH'
 	}
 	static ROUTER_ADDRESS = "0xFF75A4B698E3Ec95E608ac0f22A03B8368E05F5D";
 	static ROUTER_ABI = JSON.parse(fs.readFileSync('./src/abi/aaveRouter.json', "utf8"));

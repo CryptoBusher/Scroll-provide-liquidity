@@ -34,6 +34,13 @@ export const config = {
             remainingBalance: [0, 0],                           // Сколько должно оставаться на кошельке после депозита (min, max)
             roundToDecimals: [1, 2],                            // Округление суммы депозита (min, max)
             safetyTreshold: 1000                                // Запас при проверке доступности пула (0+)
+        },
+        wstETH: {
+            depositEnabled: false,                              // Депозитить wstETH (true, false)
+            minDeposit: 0.1,                                    // Минимальный депозит (>0)
+            remainingBalance: [0, 0],                           // Сколько должно оставаться на кошельке после депозита (min, max)
+            roundToDecimals: [2, 4],                            // Округление суммы депозита (min, max)
+            safetyTreshold: 0.1                                 // Запас при проверке доступности пула (0+)
         }
     },
 

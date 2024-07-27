@@ -55,14 +55,25 @@ export const tokensData = {
 			decimals: 18,
 			isStable: false,
 			cgData: {
-				"id": "ethereum",
-				"symbol": "eth",
-				"name": "Ethereum"		
+				id: "ethereum",
+				symbol: "eth",
+				name: "Ethereum"		
+			}
+		},
+		wstETH: {
+			address: "0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32",
+			decimals: 18,
+			isStable: false,
+			cgData: {
+				id: "",
+				symbol: "",
+				name: ""
 			}
 		},
 		aScrWETH: {  // AAVE staked ETH
 			address: "0xf301805be1df81102c957f6d4ce29d2b8c056b2a",
 			decimals: 18,
+			isStable: false,
 			cgData: {
 				"id": "ethereum",
 				"symbol": "eth",
@@ -72,10 +83,21 @@ export const tokensData = {
 		aScrUSDC: {  // AAVE staked USDC
 			address: "0x1D738a3436A8C49CefFbaB7fbF04B660fb528CbD",
 			decimals: 6,
+			isStable: true,
 			cgData: {
 				id: "usd-coin",
 				symbol: "usdc",
 				name: "USDC"
+			}
+		},
+		aScrwstETH: {  // AAVE staked wstETH
+			address: "0x5B1322eeb46240b02e20062b8F0F9908d525B09c",
+			decimals: 18,
+			isStable: false,
+			cgData: {
+				id: "",
+				symbol: "",
+				name: ""
 			}
 		}
 	}
